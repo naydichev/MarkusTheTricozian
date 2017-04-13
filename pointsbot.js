@@ -132,6 +132,12 @@ controller.hears([/([-\+]?\d+) ([\w\s]{0,50}) to (.*)/], "ambient,mention,direct
     var amount = parseInt(message.match[1]);
     var point_type = message.match[2];
     var id = message.match[3];
+
+    if (id.slice(2, -1) == message.user) {
+        bot.reply(message, "you can't give yourself points, fool!");
+        return;
+    }
+
     console.log("amount: " + amount + "; point_type: " + point_type + "; id: " + id);
 
     if (amount > 20 || amount < -20) {
