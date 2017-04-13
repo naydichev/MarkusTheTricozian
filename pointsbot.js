@@ -193,7 +193,7 @@ function print_points_for(bot, message, point_type, id) {
     });
 }
 
-controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/, /how many ([:\w\s]{0,50}) do (i) have/], "ambient,direct_message,direct_mention,mention", function(bot, message) {
+controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/i, /how many ([:\w\s]{0,50}) do (i) have/i], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
 
     var point_type = message.match[1]
