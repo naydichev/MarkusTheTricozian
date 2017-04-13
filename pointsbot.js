@@ -70,43 +70,50 @@ function check_ratelimit(bot, message, ratelimit_type, callback) {
 }
 
 function generate_point_type_lookup_key(message, point_type) {
-    return message.team + "-points-" + point_type;
+    return message.team + "-points";
 }
 
-function get_points(bot, message, point_type, callback) {
-    var points = controller.storage.teams.get(generate_point_type_lookup_key(message, point_type), function(err, team_data) {
+function get_points(bot, message, callback) {
+    var points = controller.storage.teams.get(generate_point_type_lookup_key(message), function(err, team_data) {
         if (err || !team_data) {
             team_data = {
                 points: {}
             };
         }
 
-        console.log(point_type + ": " + JSON.stringify(team_data.points));
+        console.log("points: " + JSON.stringify(team_data.points));
         callback(team_data.points || {});
     });
 }
 
 function get_points_for(bot, message, point_type, id, callback) {
+    point_type = point_type.trim().toLowerCase();
     function inner_callback(points) {
-        console.log("points for " + point_type + ": " + JSON.stringify(points));
-        callback(points[id] || 0);
+        var specific_point_types = points[point_type] || {};
+        console.log("points for " + point_type + ": " + JSON.stringify(specific_point_types));
+        callback(specific_point_types[id] || 0);
     }
 
-    get_points(bot, message, point_type, inner_callback);
+    get_points(bot, message, inner_callback);
 }
 
 function save_points(bot, message, point_type, id, amt) {
     function callback(points) {
-        points[id] = amt;
+        point_type = point_type.trim().toLowerCase();
+        if (!points[point_type]) {
+            points[point_type] = {};
+        }
 
-        controller.storage.teams.save({id: generate_point_type_lookup_key(message, point_type), points: points}, function(err) {
+        points[point_type][id] = amt;
+
+        controller.storage.teams.save({id: generate_point_type_lookup_key(message), points: points}, function(err) {
             if (err) {
                 throw new Error(err);
             }
         });
     }
 
-    get_points(bot, message, point_type, callback);
+    get_points(bot, message, callback);
 }
 
 controller.hears(["abhi"], "ambient,mention,direct_mention,direct_message", function(bot, message) {
