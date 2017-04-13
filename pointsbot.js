@@ -141,7 +141,7 @@ controller.hears([/([-\+]?\d+) ([\w\s]{0,50}) to (.*)/], "ambient,mention,direct
     console.log("amount: " + amount + "; point_type: " + point_type + "; id: " + id);
 
     if (amount > 20 || amount < -20) {
-        bot.reply(message, "point amount of out range -20 <= points <= 20");
+        bot.reply(message, get_sassy_range_error());
         return;
     }
 
@@ -159,6 +159,18 @@ controller.hears([/([-\+]?\d+) ([\w\s]{0,50}) to (.*)/], "ambient,mention,direct
     });
 });
 
+function get_sassy_range_error() {
+    possible_messages = 
+        ["Foolish human.  Point amount of out range: -20 <= points <= 20",
+         "Do I look like a points fairy to you?"]
+         
+    return possible_messages[getRandomInt(0,possible_messages.length)]
+}
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
 
@@ -169,3 +181,5 @@ controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direc
         bot.reply(message, id + " has " + points + " " + point_type);
     });
 });
+
+
