@@ -125,7 +125,7 @@ controller.hears(["hello", "hi"], 'direct_message,direct_mention,mention', funct
     });
 });
 
-controller.hears([/([-\+]?\d+) ([\w\s]{0,50}) to (.*)/], "ambient,mention,direct_mention", function(bot, message) {
+controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direct_mention", function(bot, message) {
     console.log("add points call");
     add_reaction(bot, message);
 
