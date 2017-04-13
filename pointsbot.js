@@ -91,7 +91,7 @@ function get_points_for(bot, message, point_type, id, callback) {
     function inner_callback(points) {
         var specific_point_types = points[point_type] || {};
         console.log("points for " + point_type + ": " + JSON.stringify(specific_point_types));
-        callback(specific_point_types[id] || 0);
+        callback(bot, message, point_type, id, specific_point_types[id] || 0);
     }
 
     get_points(bot, message, inner_callback);
@@ -163,12 +163,12 @@ controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direc
 
     check_ratelimit(bot, message, "points", function() {
         console.log("passed ratelimit check");
-        function callback(existing_points) {
+        function callback(bot, message, point_type, id, existing_points) {
             console.log(existing_points + " " + point_type + " for " + id);
             var points = existing_points + amount;
 
             save_points(bot, message, point_type, id, points);
-            bot.reply(message, id + " has " + points + " " + point_type);
+            print_points_for(bot, message, point_type, id);
         }
 
         get_points_for(bot, message, point_type, id, callback);
@@ -187,13 +187,18 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
+function print_points_for(bot, message, point_type, id) {
+    get_points_for(bot, message, point_type, id, function (bot, message, point_type, id, points) {
+        bot.reply(message, id + " has " + points + " " + point_type);
+    });
+}
+
+
 controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
 
     var point_type = message.match[1]
     var id = message.match[2];
-  
-    get_points_for(bot, message, point_type, id, function(points) {
-        bot.reply(message, id + " has " + points + " " + point_type);
-    });
+
+    print_points_for(bot, message, point_type, id);
 });
