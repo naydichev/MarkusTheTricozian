@@ -4,7 +4,7 @@ if (!process.env.token) {
     process.exit(1);
 }
 
-var Botkit = require('../botkit/lib/Botkit.js');
+var Botkit = require('../node_modules/botkit/lib/Botkit.js');
 var os = require('os');
 
 var controller = Botkit.slackbot({
@@ -110,7 +110,7 @@ function save_points(bot, message, point_type, id, amt) {
 }
 
 controller.hears(["abhi"], "ambient,mention,direct_mention,direct_message", function(bot, message) {
-    bot.replyInThread(message, "abhi is great");
+    bot.reply(message, "abhi is great");
 });
 
 controller.hears(["hello", "hi"], 'direct_message,direct_mention,mention', function(bot, message) {
@@ -135,7 +135,7 @@ controller.hears([/([-\+]?\d+) ([\w\s]{0,50}) to (.*)/], "ambient,mention,direct
     console.log("amount: " + amount + "; point_type: " + point_type + "; id: " + id);
 
     if (amount > 20 || amount < -20) {
-        bot.replyInThread(message, "point amount of out range -20 <= points <= 20");
+        bot.reply(message, "point amount of out range -20 <= points <= 20");
         return;
     }
 
@@ -146,7 +146,7 @@ controller.hears([/([-\+]?\d+) ([\w\s]{0,50}) to (.*)/], "ambient,mention,direct
             var points = existing_points + amount;
 
             save_points(bot, message, point_type, id, points);
-            bot.replyInThread(message, id + " has " + points + " " + point_type);
+            bot.reply(message, id + " has " + points + " " + point_type);
         }
 
         get_points_for(bot, message, point_type, id, callback);
@@ -160,6 +160,6 @@ controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direc
     var id = message.match[2];
 
     get_points_for(bot, message, point_type, id, function(points) {
-        bot.replyInThread(message, id + " has " + points + " " + point_type);
+        bot.reply(message, id + " has " + points + " " + point_type);
     });
 });
