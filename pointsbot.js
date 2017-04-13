@@ -110,6 +110,7 @@ function save_points(bot, message, point_type, id, amt) {
             if (err) {
                 throw new Error(err);
             }
+            print_points_for(bot, message, point_type, id);
         });
     }
 
@@ -168,7 +169,6 @@ controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direc
             var points = existing_points + amount;
 
             save_points(bot, message, point_type, id, points);
-            print_points_for(bot, message, point_type, id);
         }
 
         get_points_for(bot, message, point_type, id, callback);
@@ -192,7 +192,6 @@ function print_points_for(bot, message, point_type, id) {
         bot.reply(message, id + " has " + points + " " + point_type);
     });
 }
-
 
 controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/, /how many ([:\w\s]{0,50}) do (i) have/], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
