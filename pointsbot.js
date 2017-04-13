@@ -91,7 +91,7 @@ function get_points_for(bot, message, point_type, id, callback) {
     function inner_callback(points) {
         var specific_point_types = points[point_type] || {};
         console.log("points for " + point_type + ": " + JSON.stringify(specific_point_types));
-        callback(specific_point_types[id] || 0);
+        callback(bot, message, id, point_type, specific_point_types[id] || 0);
     }
 
     get_points(bot, message, inner_callback);
@@ -163,17 +163,21 @@ controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direc
 
     check_ratelimit(bot, message, "points", function() {
         console.log("passed ratelimit check");
-        function callback(existing_points) {
+        function callback(bot, message, id, point_type, existing_points) {
             console.log(existing_points + " " + point_type + " for " + id);
             var points = existing_points + amount;
 
             save_points(bot, message, point_type, id, points);
-            bot.reply(message, id + " has " + points + " " + point_type);
+            print_get_points_for(bot, message, id, point_type, points)
         }
 
         get_points_for(bot, message, point_type, id, callback);
     });
 });
+
+function print_get_points_for(bot, message, id, point_type, points) {
+    bot.reply(message, id + " has " + points + " " + point_type);
+}
 
 function get_sassy_range_error() {
     var possible_messages = 
@@ -193,7 +197,5 @@ controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direc
     var point_type = message.match[1]
     var id = message.match[2];
 
-    get_points_for(bot, message, point_type, id, function(points) {
-        bot.reply(message, id + " has " + points + " " + point_type);
-    });
+    get_points_for(bot, message, point_type, id, print_get_points_for);
 });
