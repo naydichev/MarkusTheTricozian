@@ -117,8 +117,17 @@ function save_points(bot, message, point_type, id, amt) {
 }
 
 controller.hears(["abhi"], "ambient,mention,direct_mention,direct_message", function(bot, message) {
-    bot.reply(message, "abhi is great");
+    bot.reply(message, get_abhi_message());
 });
+
+function get_abhi_message() {
+    var possible_messages = 
+        ["Abhi is great.",
+         "She's Ahbi-lievable!",
+         "Did someone say Abhi?  I've heard about her. She's great."];
+         
+    return possible_messages[getRandomInt(0,possible_messages.length)];
+}
 
 controller.hears(["hello", "hi"], 'direct_message,direct_mention,mention', function(bot, message) {
     add_reaction(bot, message);
@@ -167,7 +176,7 @@ controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direc
 });
 
 function get_sassy_range_error() {
-    possible_messages = 
+    var possible_messages = 
         ["Foolish human.  Point amount of out range: -20 <= points <= 20",
          "Do I look like a points fairy to you?"]
          
@@ -175,7 +184,7 @@ function get_sassy_range_error() {
 }
 
 function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  return Math.floor(Math.random() * (max - min) + min);
 }
 
 controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direct_mention,mention", function(bot, message) {
@@ -188,5 +197,3 @@ controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direc
         bot.reply(message, id + " has " + points + " " + point_type);
     });
 });
-
-
