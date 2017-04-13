@@ -193,11 +193,11 @@ function print_points_for(bot, message, point_type, id) {
     });
 }
 
-controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/, /how many ([:\w\s]{0,50}) do (i) have/], "ambient,direct_message,direct_mention,mention", function(bot, message) {
+controller.hears([/how many ([:\w\s]{0,50}) do(es)? (.*) have/i], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
 
     var point_type = message.match[1]
-    var id = message.match[2];
+    var id = message.match[3];
 
     if (id.trim().toLowerCase() == 'i') {
         id = "<@" + message.user + ">";
