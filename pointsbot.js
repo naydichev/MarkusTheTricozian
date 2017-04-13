@@ -150,7 +150,7 @@ controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direc
     var id = message.match[3];
 
     if (id.slice(2, -1) == message.user) {
-        bot.reply(message, "you can't give yourself points, fool!");
+        bot.reply(message, "You can't give yourself points, fool!");
         return;
     }
 
@@ -193,7 +193,8 @@ function print_points_for(bot, message, point_type, id) {
     });
 }
 
-controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direct_mention,mention", function(bot, message) {
+
+controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
 
     var point_type = message.match[1]
