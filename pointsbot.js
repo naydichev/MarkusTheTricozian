@@ -28,7 +28,6 @@ var Markus = function Constructor(settings) {
     });
 
     this.settings = settings;
-    this.dbPath = 
     this.dbPath = settings.dbPath;
     this.db = null;
 };
