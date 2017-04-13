@@ -5,7 +5,14 @@ if (!process.env.token) {
 }
 
 var Botkit = require('../node_modules/botkit/lib/Botkit.js');
+var sqlite3 = require('sqlite3').verbose();
 var os = require('os');
+var fs = require('fs');
+
+var settings = {
+    token: process.env.token,
+    dbPath: 'storage.sqlite3',
+};
 
 var controller = Botkit.slackbot({
     json_file_store: 'botstorage-prod',
@@ -14,11 +21,39 @@ var controller = Botkit.slackbot({
     send_via_rtm: false,
 });
 
-var bot = controller.spawn({
-    token: process.env.token
-});
+// Setup Markus
+var Markus = function Constructor(settings) {
+    this.bot = controller.spawn({
+        token: settings.token
+    });
 
-bot.startRTM();
+    this.settings = settings;
+    this.dbPath = settings.dbPath;
+    this.db = null;
+};
+
+Markus.prototype._connectDb = function() {
+    if (!fs.existsSync(this.dbPath)) {
+        console.error('Database path ' + '"' + this.dbPath + '"does not exist.');
+        process.exit(1);
+    }
+
+    this.db = new sqlite3.Database(this.dbPath);
+}
+
+Markus.prototype._onStart = function(settings) {
+    this._connectDb();
+    this.bot.startRTM();
+}
+
+Markus.prototype.run = function() {
+    this._onStart();
+};
+
+
+// Create markus
+markus = new Markus(settings);
+markus.run();
 
 function add_reaction(bot, message, name) {
     name = name || 'robot_face';
