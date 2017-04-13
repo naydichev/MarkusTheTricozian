@@ -61,7 +61,7 @@ function check_ratelimit(bot, message, ratelimit_type, callback) {
 
         user_data.ratelimit[ratelimit_type] = message.ts;
 
-        console.log("saving user data " + user_data);
+        console.log("saving user data " + JSON.stringify(user_data));
         controllers.storage.users.save({id: user, ratelimit:user_data.ratelimit});
 
         console.log("calling callback");
@@ -81,6 +81,7 @@ function get_points(bot, message, point_type, callback) {
             };
         }
 
+        console.log(point_type + ": " + JSON.stringify(team_data.points));
         callback(team_data.points || {});
     });
 }
@@ -144,7 +145,7 @@ controller.hears([/([-\+]?\d+) ([\w\s]{0,50}) to (.*)/], "ambient,mention,direct
             console.log(existing_points + " " + point_type + " for " + id);
             var points = existing_points + amount;
 
-            save_points(bot, message, id, point_type, points);
+            save_points(bot, message, point_type, id, points);
             bot.replyInThread(message, id + " has " + points + " " + point_type);
         }
 
