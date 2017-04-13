@@ -87,7 +87,7 @@ function get_points(bot, message, callback) {
 }
 
 function get_points_for(bot, message, point_type, id, callback) {
-    point_type = point_type.trim().toUpperCase();
+    point_type = point_type.trim().toLowerCase();
     function inner_callback(points) {
         var specific_point_types = points[point_type] || {};
         console.log("points for " + point_type + ": " + JSON.stringify(specific_point_types));
@@ -99,7 +99,7 @@ function get_points_for(bot, message, point_type, id, callback) {
 
 function save_points(bot, message, point_type, id, amt) {
     function callback(points) {
-        point_type = point_type.trim().toUpperCase();
+        point_type = point_type.trim().toLowerCase();
         if (!points[point_type]) {
             points[point_type] = {};
         }
