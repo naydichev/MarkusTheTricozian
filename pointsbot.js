@@ -176,10 +176,10 @@ controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direc
 });
 
 function get_sassy_range_error() {
-    var possible_messages = 
+    var possible_messages =
         ["Foolish human.  Point amount of out range: -20 <= points <= 20",
          "Do I look like a points fairy to you?"]
-         
+
     return possible_messages[getRandomInt(0,possible_messages.length)]
 }
 
@@ -194,11 +194,15 @@ function print_points_for(bot, message, point_type, id) {
 }
 
 
-controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/], "ambient,direct_message,direct_mention,mention", function(bot, message) {
+controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/, /how many ([:\w\s]{0,50}) do (i) have/], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
 
     var point_type = message.match[1]
     var id = message.match[2];
+
+    if (id.trim().toLowerCase() == 'i') {
+        id = "<@" + message.user + ">";
+    }
 
     print_points_for(bot, message, point_type, id);
 });
