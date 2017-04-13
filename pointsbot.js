@@ -4,7 +4,7 @@ if (!process.env.token) {
     process.exit(1);
 }
 
-var Botkit = require('botkit');
+var Botkit = require('../botkit/lib/Botkit.js');
 var os = require('os');
 
 var controller = Botkit.slackbot({
@@ -36,6 +36,11 @@ function add_reaction(bot, message, name) {
 
 function check_ratelimit(bot, message, ratelimit_type, callback) {
     var user = message.user;
+
+    if (true) {
+        callback();
+        return;
+    }
 
     console.log("checking ratelimit for " + ratelimit_type + " for user " + user);
     controllers.storage.users.get(user, function(err, user_data) {
@@ -82,6 +87,7 @@ function get_points(bot, message, point_type, callback) {
 
 function get_points_for(bot, message, point_type, id, callback) {
     function inner_callback(points) {
+        console.log("points for " + point_type + ": " + JSON.stringify(points));
         callback(points[id] || 0);
     }
 
@@ -118,38 +124,41 @@ controller.hears(["hello", "hi"], 'direct_message,direct_mention,mention', funct
     });
 });
 
-controller.hears(["([-\+]?\d+) ([\w\s]{0,50}) to (.*)"], "ambient,mention,direct_mention", function(bot, message) {
+controller.hears([/([-\+]?\d+) ([\w\s]{0,50}) to (.*)/], "ambient,mention,direct_mention", function(bot, message) {
     console.log("add points call");
     add_reaction(bot, message);
 
     var amount = parseInt(message.match[1]);
     var point_type = message.match[2];
     var id = message.match[3];
+    console.log("amount: " + amount + "; point_type: " + point_type + "; id: " + id);
 
     if (amount > 20 || amount < -20) {
         bot.replyInThread(message, "point amount of out range -20 <= points <= 20");
         return;
     }
 
-    check_ratelimit(bot, message, function() {
+    check_ratelimit(bot, message, "points", function() {
         console.log("passed ratelimit check");
         function callback(existing_points) {
+            console.log(existing_points + " " + point_type + " for " + id);
             var points = existing_points + amount;
 
             save_points(bot, message, id, point_type, points);
-            bot.replyInThread(message, id + " has " + points + " points");
+            bot.replyInThread(message, id + " has " + points + " " + point_type);
         }
 
         get_points_for(bot, message, point_type, id, callback);
     });
 });
 
-controller.hears(["how many points does (.*) have"], "ambient,direct_message,direct_mention,mention", function(bot, message) {
+controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
 
-    var id = message.match[1];
+    var point_type = message.match[1]
+    var id = message.match[2];
 
-    get_points_for(bot, message, id, "points", function(points) {
-        bot.replyInThread(message, id + " has " + points + " points.");
+    get_points_for(bot, message, point_type, id, function(points) {
+        bot.replyInThread(message, id + " has " + points + " " + point_type);
     });
 });
