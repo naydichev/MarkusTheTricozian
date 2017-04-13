@@ -87,7 +87,7 @@ function get_points(bot, message, callback) {
 }
 
 function get_points_for(bot, message, point_type, id, callback) {
-    point_type = point_type.trim().toLowerCase();
+    point_type = point_type.trim().toUpperCase();
     function inner_callback(points) {
         var specific_point_types = points[point_type] || {};
         console.log("points for " + point_type + ": " + JSON.stringify(specific_point_types));
@@ -99,7 +99,7 @@ function get_points_for(bot, message, point_type, id, callback) {
 
 function save_points(bot, message, point_type, id, amt) {
     function callback(points) {
-        point_type = point_type.trim().toLowerCase();
+        point_type = point_type.trim().toUpperCase();
         if (!points[point_type]) {
             points[point_type] = {};
         }
@@ -150,7 +150,7 @@ controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direc
     var id = message.match[3];
 
     if (id.slice(2, -1) == message.user) {
-        bot.reply(message, "you can't give yourself points, fool!");
+        bot.reply(message, "You can't give yourself points, fool!");
         return;
     }
 
@@ -187,12 +187,12 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-controller.hears(["how many (.*) does (.*) have"], "ambient,direct_message,direct_mention,mention", function(bot, message) {
+controller.hears([/how many ([:\w\s]{0,50}) does (.*) have/], "ambient,direct_message,direct_mention,mention", function(bot, message) {
     add_reaction(bot, message);
 
     var point_type = message.match[1]
     var id = message.match[2];
-
+  
     get_points_for(bot, message, point_type, id, function(points) {
         bot.reply(message, id + " has " + points + " " + point_type);
     });
