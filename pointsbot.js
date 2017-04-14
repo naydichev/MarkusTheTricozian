@@ -1,4 +1,5 @@
 var debug = process.env.debug || false;
+var stage = process.env.stage || "prod";
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
     process.exit(1);
@@ -15,7 +16,7 @@ var settings = {
 };
 
 var controller = Botkit.slackbot({
-    json_file_store: 'botstorage-prod',
+    json_file_store: 'botstorage-' + stage,
     stale_connection_timeout: 15000,
     debug: debug,
     send_via_rtm: false,
