@@ -234,10 +234,35 @@ controller.hears([/how many ([:\w\s]{0,50}) do(es)? (.*) have/i], "ambient,direc
 
     var point_type = message.match[1]
     var id = message.match[3];
+    var lower_id = id.trim().toLowerCase();
 
-    if (id.trim().toLowerCase() == 'i') {
+    if (lower_id == 'i') {
         id = "<@" + message.user + ">";
     }
 
-    print_points_for(bot, message, point_type, id);
+    if (lower_id == 'everyone') {
+        get_points(bot, message, function(points) {
+            var points_of_type = points[point_type];
+            var summary = "here's a breakdown of everyone's " + point_type + ": ";
+            var how_many = 0;
+
+            for (var who in points_of_type) {
+                if (points_of_type.hasOwnProperty(who)) {
+                    summary += who + " has " + points_of_type[who] + ", ";
+                    how_many++;
+                }
+            }
+
+            if (how_many) {
+                // drop the ", " suffix
+                summary = summary.slice(0, -2);
+            } else {
+                summary = "nobody has any " + point_type;
+            }
+
+            bot.reply(message, summary);
+        });
+    } else {
+        print_points_for(bot, message, point_type, id);
+    }
 });
