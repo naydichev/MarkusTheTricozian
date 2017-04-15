@@ -12,7 +12,7 @@ var fs = require('fs');
 
 var settings = {
     token: process.env.token,
-    dbPath: 'storage.sqlite3',
+    dbPath: 'botstorage-' + stage + '.db',
 };
 
 var controller = Botkit.slackbot({
