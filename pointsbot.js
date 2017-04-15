@@ -212,7 +212,9 @@ function generate_hello_message_for(who) {
 
 // just says hi. we don't store the user.name currently, so it will always say Hello.
 controller.hears(["hello", "hi"], 'direct_message,direct_mention,mention', function(bot, message) {
-    add_reaction(bot, message);
+    if (stage == "beta") {
+        add_reaction(bot, message);
+    }
 
     fetch_user(bot, message.user, function (err, data) {
         if (err) {
@@ -231,7 +233,9 @@ controller.hears(["hello", "hi"], 'direct_message,direct_mention,mention', funct
 
 // 'points' awards
 controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direct_mention", function(bot, message) {
-    add_reaction(bot, message);
+    if (stage == "beta") {
+        add_reaction(bot, message);
+    }
 
     var amount = parseInt(message.match[1]);
     var point_type = message.match[2];
@@ -291,7 +295,9 @@ function print_points_for(bot, message, point_type, id) {
 
 // point checker
 controller.hears([/how many ([:\w\s]{0,50}) do(es)? (.*) have/i], "ambient,direct_message,direct_mention,mention", function(bot, message) {
-    add_reaction(bot, message);
+    if (stage == "beta") {
+        add_reaction(bot, message);
+    }
 
     var point_type = message.match[1]
     var id = message.match[3];
