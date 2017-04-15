@@ -162,7 +162,7 @@ function get_abhi_message() {
         ["Abhi is great.",
          "She's Ahbi-lievable!",
          "Did someone say Abhi?  I've heard about her. She's great."];
-         
+
     return possible_messages[getRandomInt(0,possible_messages.length)];
 }
 
@@ -243,24 +243,23 @@ controller.hears([/how many ([:\w\s]{0,50}) do(es)? (.*) have/i], "ambient,direc
     if (lower_id == 'everyone') {
         get_points(bot, message, function(points) {
             var points_of_type = points[point_type];
-            var summary = "here's a breakdown of everyone's " + point_type + ": ";
-            var how_many = 0;
+            var summary = []
 
             for (var who in points_of_type) {
                 if (points_of_type.hasOwnProperty(who)) {
-                    summary += who + " has " + points_of_type[who] + ", ";
-                    how_many++;
+                    summary.push(who + " has " + points_of_type[who]);
                 }
             }
 
-            if (how_many) {
+            var words = "";
+            if (summary.length) {
                 // drop the ", " suffix
-                summary = summary.slice(0, -2);
+                words = "here's a summary of how many " + point_type + " everyone has: " + summary.join(", ");
             } else {
-                summary = "nobody has any " + point_type;
+                words = "nobody has any " + point_type;
             }
 
-            bot.reply(message, summary);
+            bot.reply(message, words);
         });
     } else {
         print_points_for(bot, message, point_type, id);
