@@ -251,12 +251,9 @@ controller.hears([/how many ([:\w\s]{0,50}) do(es)? (.*) have/i], "ambient,direc
                 }
             }
 
-            var words = "";
+            var words = "nobody has any " + point_type;
             if (summary.length) {
-                // drop the ", " suffix
                 words = "here's a summary of how many " + point_type + " everyone has: " + summary.join(", ");
-            } else {
-                words = "nobody has any " + point_type;
             }
 
             bot.reply(message, words);
