@@ -35,8 +35,8 @@ var Markus = function Constructor(settings) {
 
 Markus.prototype._connectDb = function() {
     if (!fs.existsSync(this.dbPath)) {
-        console.error('Database path ' + '"' + this.dbPath + '"does not exist.');
-        process.exit(1);
+        console.error('Database path ' + '"' + this.dbPath + '"does not exist, creating it.');
+        fs.closeSync(fs.openSync(this.dbPath, 'w'));
     }
 
     this.db = new sqlite3.Database(this.dbPath);
@@ -193,16 +193,39 @@ function get_abhi_message() {
     return possible_messages[getRandomInt(0,possible_messages.length)];
 }
 
+// fetches the username from slack api
+function fetch_user(bot, user, callback) {
+    bot.api.users.info({token: settings.token, user: user}, callback);
+}
+
+function generate_hello_message_for(who) {
+    // simple for now, maybe we can do lookups for things in the future
+    var possible_messages = [
+        "heya " + who + ", how are ya?",
+        "hi " + who + "!",
+        "sup " + who,
+        "oh hey " + who
+    ];
+
+    return possible_messages[getRandomInt(0, possible_messages.length)];
+}
+
 // just says hi. we don't store the user.name currently, so it will always say Hello.
 controller.hears(["hello", "hi"], 'direct_message,direct_mention,mention', function(bot, message) {
     add_reaction(bot, message);
 
-    controller.storage.users.get(message.user, function(err, user) {
-        if (user && user.name) {
-            bot.reply(message, 'Hello ' +user.name + '!!');
-        } else {
-            bot.reply(message, 'Hello.');
+    fetch_user(bot, message.user, function (err, data) {
+        if (err) {
+            console.error("got error: " + err);
+            return;
         }
+
+        var user = data.user;
+        var first_name = user.real_name.split(" ")[0];
+        if (user.profile && user.profile.first_name) {
+            first_name = user.profile.first_name;
+        }
+        bot.reply(message, generate_hello_message_for(first_name));
     });
 });
 
