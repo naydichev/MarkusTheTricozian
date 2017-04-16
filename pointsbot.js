@@ -248,7 +248,7 @@ controller.hears([/([-\+]?\d+) ([:\w\s]{0,50}) to (.*)/], "ambient,mention,direc
     }
 
     // range check
-    if (points_award_range_check(amount)) {
+    if (!points_award_range_check(amount)) {
         bot.reply(message, get_sassy_range_error());
         return;
     }
