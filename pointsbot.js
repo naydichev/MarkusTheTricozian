@@ -75,6 +75,8 @@ Markus.prototype.save_points = function(giver, recipient, point_type, amount) {
 markus = new Markus(settings);
 markus.run();
 
+var abhi = require('./abhi/abhi.js');
+
 // convenience method to add a reaction to a message
 function add_reaction(bot, message, name) {
     name = name || 'robot_face';
@@ -180,18 +182,7 @@ function save_points(bot, message, point_type, id, amt) {
 }
 
 // special feature request
-controller.hears(["abhi"], "ambient,mention,direct_mention,direct_message", function(bot, message) {
-    bot.reply(message, get_abhi_message());
-});
-
-function get_abhi_message() {
-    var possible_messages =
-        ["Abhi is great.",
-         "She's Abhi-lievable!",
-         "Did someone say Abhi?  I've heard about her. She's great."];
-
-    return possible_messages[getRandomInt(0,possible_messages.length)];
-}
+controller.hears(["abhi"], "ambient,mention,direct_mention,direct_message", abhi.hears);
 
 // fetches the username from slack api
 function fetch_user(bot, user, callback) {
