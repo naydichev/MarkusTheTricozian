@@ -312,7 +312,7 @@ controller.hears([/how many ([:\w\s]{0,50}) do(es)? (.*) have/i], "ambient,direc
     if (lower_id == 'everyone') {
         get_points(bot, message, function(points) {
             var points_of_type = points[point_type];
-            var summary = []
+            var summary = [];
 
             for (var who in points_of_type) {
                 if (points_of_type.hasOwnProperty(who)) {
@@ -331,6 +331,34 @@ controller.hears([/how many ([:\w\s]{0,50}) do(es)? (.*) have/i], "ambient,direc
         // default case, lookup the id
         print_points_for(bot, message, point_type, id);
     }
+});
+
+// other form of point checking
+controller.hears([/what points?( types)? do(es)? (.*) have/], "ambient,direction_message,direction_mention,mention", function(bot, message) {
+    if (stage == "beta") {
+        add_reaction(bot, message);
+    }
+
+    var id = message.match[3];
+    if (id.trim().toLowerCase() == "i") {
+        id = "<@" + message.user + ">";
+    }
+
+    var summary = [];
+    get_points(bot, message, function(points) {
+        for (var points_type in points) {
+            if (points.hasOwnProperty(points_type) && points[points_type].hasOwnProperty(id)) {
+                summary.push(points[points_type][id] + " " + points_type);
+            }
+        }
+
+        var words = "you don't have any points!";
+        if (summary.length) {
+            words = id + " has: " + summary.join(", ");
+        }
+
+        bot.reply(message, words);
+    });
 });
 
 // random advice, prints messages 5% of the time
